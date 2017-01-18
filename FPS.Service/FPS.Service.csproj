@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FPS.Service</RootNamespace>
     <AssemblyName>FPS.Service</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,6 +41,10 @@
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RepositoryFoundation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RepositoryFoundation.1.0.4\lib\net45\RepositoryFoundation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=4.4.2.472, Culture=neutral, processorArchitecture=MSIL">
@@ -73,10 +78,6 @@
     <Compile Include="Models\ResidentFilterServiceModel.cs" />
     <Compile Include="Models\ResidentServiceModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\Interface\IGenericRepository.cs" />
-    <Compile Include="Repository\Interface\IUnitOfWork.cs" />
-    <Compile Include="Repository\Service\GenericRepository.cs" />
-    <Compile Include="Repository\Service\UnitOfWork.cs" />
     <Compile Include="Services\ApartmentService.cs" />
     <Compile Include="Services\CoreService.cs" />
     <Compile Include="Services\ResidentService.cs" />

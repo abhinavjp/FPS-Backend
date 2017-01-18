@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StructureMap;
-using FPS.Service.Repository.Service;
-using FPS.Service.Repository.Interface;
 using StructureMap.Pipeline;
 using FPS.Service.Interface;
 using FPS.Service.Services;
@@ -21,10 +19,6 @@ namespace FPS.Service.Infrastructure
         {
             container.Configure(x =>
             {
-                // Repository
-                x.For(typeof(IUnitOfWork<>)).Use(typeof(UnitOfWork<>));
-                x.For(typeof(IGenericRepository<,>)).Use(typeof(GenericRepository<,>));
-
                 // Services
                 x.For<IResidentService>().Use<ResidentService>();
                 x.For<IApartmentService>().Use<ApartmentService>();

@@ -1,11 +1,8 @@
 ﻿using FPS.Data;
-using FPS.Service.Repository.Interface;
 using StructureMap.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 using static FPS.Service.Infrastructure.StructureMapConfigurator;
 using static FPS.Helper.ErrorHandler.ProcessResultHelper;
@@ -13,34 +10,34 @@ using FPS.Service.Interface;
 using FPS.Service.Models;
 using FPS.Helper.ErrorHandler;
 using AutoMapper;
+using RepositoryFoundation.Repository.Interface;
 
 namespace FPS.Service.Services
 {
-    public class ResidentService: IResidentService
+    public class ResidentService : IResidentService
     {
         private readonly FPSDBDevEntities _context;
-        private readonly IGenericRepository<Resident, FPSDBDevEntities> _residentRepository;
-        private readonly IGenericRepository<Apartment, FPSDBDevEntities> _apartmentRepository;
-        private readonly IUnitOfWork<FPSDBDevEntities> _unitOfWork;
+        private readonly ExplicitArguments args;
         public ResidentService()
         {
             _context = new FPSDBDevEntities();
-            var args = new ExplicitArguments();
+            args = new ExplicitArguments();
             args.Set(_context);
-            _unitOfWork = GetInstance<IUnitOfWork<FPSDBDevEntities>>(args);
-            _residentRepository = _unitOfWork.GetRepository<Resident, FPSDBDevEntities>();
-            _apartmentRepository = _unitOfWork.GetRepository<Apartment, FPSDBDevEntities>();
         }
 
         public ProcessResult<List<ResidentServiceModel>> GetResident(ResidentFilterServiceModel residentFilters)
         {
             try
             {
-                var residents = _residentRepository.All;
                 List<ResidentServiceModel> residentModels = null;
-                if(residentFilters == null)
+                using (var unitOfWork = GetInstance<IUnitOfWork<FPSDBDevEntities>>(args))
                 {
-                    residentModels = Mapper.Map<List<ResidentServiceModel>>(residents.ToList());
+                    var residentRepository = unitOfWork.GetRepository<Resident, int>((resident) => resident.Id);
+                    var residents = residentRepository.GetAll();
+                    if (residentFilters == null)
+                    {
+                        residentModels = Mapper.Map<List<ResidentServiceModel>>(residents.ToList());
+                    }
                 }
 
                 return residentModels.GetResult();
@@ -55,9 +52,13 @@ namespace FPS.Service.Services
         {
             try
             {
-                var resident = _residentRepository.Find(id);
-                var residentModel = Mapper.Map<ResidentServiceModel>(resident);
-
+                ResidentServiceModel residentModel;
+                using (var unitOfWork = GetInstance<IUnitOfWork<FPSDBDevEntities>>(args))
+                {
+                    var residentRepository = unitOfWork.GetRepository<Resident, int>((resident) => resident.Id);
+                    var residentItem = residentRepository.Find(id);
+                    residentModel = Mapper.Map<ResidentServiceModel>(residentItem);
+                }
                 return residentModel.GetResult();
             }
             catch (Exception exception)
@@ -66,12 +67,17 @@ namespace FPS.Service.Services
             }
         }
 
-        public ProcessResult CreateResident(ResidentServiceModel resident)
+        public ProcessResult CreateResident(ResidentServiceModel residentModel)
         {
             try
             {
-                _residentRepository.Insert(Mapper.Map<Resident>(resident));
-                _unitOfWork.Commit();
+
+                using (var unitOfWork = GetInstance<IUnitOfWork<FPSDBDevEntities>>(args))
+                {
+                    var residentRepository = unitOfWork.GetRepository<Resident, int>((resident) => resident.Id);
+                    residentRepository.InsertOrUpdate(Mapper.Map<Resident>(residentModel));
+                    unitOfWork.Commit();
+                }
 
                 return ProcessResult.AllOk;
             }
@@ -81,12 +87,16 @@ namespace FPS.Service.Services
             }
         }
 
-        public ProcessResult UpdateResident(ResidentServiceModel resident)
+        public ProcessResult UpdateResident(ResidentServiceModel residentModel)
         {
             try
             {
-                _residentRepository.Update(Mapper.Map<Resident>(resident));
-                _unitOfWork.Commit();
+                using (var unitOfWork = GetInstance<IUnitOfWork<FPSDBDevEntities>>(args))
+                {
+                    var residentRepository = unitOfWork.GetRepository<Resident, int>((resident) => resident.Id);
+                    residentRepository.InsertOrUpdate(Mapper.Map<Resident>(residentModel));
+                    unitOfWork.Commit();
+                }
 
                 return ProcessResult.AllOk;
             }
@@ -100,16 +110,19 @@ namespace FPS.Service.Services
         {
             try
             {
-                if(_apartmentRepository.All.Where(a => a.ResidentId == id).Any())
+                using (var unitOfWork = GetInstance<IUnitOfWork<FPSDBDevEntities>>(args))
                 {
-                    return GetNegativeResult("An apartment is linked to this resident.\nPlease unlink the selected resident with the apartment, then try deleting again", HttpStatusCode.PreconditionFailed);
+                    var apartmentRepository = unitOfWork.GetRepository<Apartment, int>((apartment) => apartment.Id);
+                    if (apartmentRepository.HasData(a => a.ResidentId == id))
+                    {
+                        return GetNegativeResult("An apartment is linked to this resident.\nPlease unlink the selected resident with the apartment, then try deleting again", HttpStatusCode.PreconditionFailed);
+                    }
+                    var residentRepository = unitOfWork.GetRepository<Resident, int>((resident) => resident.Id);
+                    var residentItem = residentRepository.Find(id);
+                    residentItem.IsDeleted = true;
+                    residentRepository.InsertOrUpdate(residentItem);
+                    unitOfWork.Commit();
                 }
-
-                var resident = _residentRepository.Find(id);
-                resident.IsDeleted = true;
-                _residentRepository.Update(resident);
-                _unitOfWork.Commit();
-
                 return ProcessResult.AllOk;
             }
             catch (Exception exception)
