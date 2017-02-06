@@ -23,6 +23,7 @@ namespace FPS.Service.Infrastructure
                 x.For<IResidentService>().Use<ResidentService>();
                 x.For<IApartmentService>().Use<ApartmentService>();
             });
+            RepositoryFoundation.Repository.Infrastructure.StructureMapConfigurator.InitializeContainer(container);
             isInitialized = true;
         }
 

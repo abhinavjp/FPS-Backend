@@ -44,7 +44,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="RepositoryFoundation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RepositoryFoundation.1.0.4\lib\net45\RepositoryFoundation.dll</HintPath>
+      <HintPath>..\packages\Foundation.1.1.0\lib\net45\RepositoryFoundation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=4.4.2.472, Culture=neutral, processorArchitecture=MSIL">
@@ -78,6 +78,7 @@
     <Compile Include="Models\ResidentFilterServiceModel.cs" />
     <Compile Include="Models\ResidentServiceModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepositoryGetterHelper.cs" />
     <Compile Include="Services\ApartmentService.cs" />
     <Compile Include="Services\CoreService.cs" />
     <Compile Include="Services\ResidentService.cs" />
@@ -92,10 +93,6 @@
     <ProjectReference Include="..\FPS.Data\FPS.Data.csproj">
       <Project>{56A60C58-B3A9-4D74-8C55-77B569EF6E58}</Project>
       <Name>FPS.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FPS.Helper\FPS.Helper.csproj">
-      <Project>{9037C7DC-7978-420E-A885-6667DF9AED22}</Project>
-      <Name>FPS.Helper</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

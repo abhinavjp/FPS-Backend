@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using static FPS.Service.Infrastructure.StructureMapConfigurator;
-using static FPS.Helper.ErrorHandler.ProcessResultHelper;
 using FPS.Service.Interface;
 using FPS.Service.Models;
-using FPS.Helper.ErrorHandler;
 using AutoMapper;
-using RepositoryFoundation.Repository.Interface;
+using HelperFoundation.ErrorHandler;
+using static HelperFoundation.ErrorHandler.ProcessResultHelper;
+using RepositoryFoundation.Interfaces;
 
 namespace FPS.Service.Services
 {
@@ -33,6 +33,7 @@ namespace FPS.Service.Services
                 using (var unitOfWork = GetInstance<IUnitOfWork<FPSDBDevEntities>>(args))
                 {
                     var residentRepository = unitOfWork.GetRepository<Resident, int>((resident) => resident.Id);
+
                     var residents = residentRepository.GetAll();
                     if (residentFilters == null)
                     {
@@ -112,12 +113,12 @@ namespace FPS.Service.Services
             {
                 using (var unitOfWork = GetInstance<IUnitOfWork<FPSDBDevEntities>>(args))
                 {
-                    var apartmentRepository = unitOfWork.GetRepository<Apartment, int>((apartment) => apartment.Id);
-                    if (apartmentRepository.HasData(a => a.ResidentId == id))
+                    var apartmentRepository = unitOfWork.GetApartmentRepository();
+                    if (apartmentRepository.HasAny(a => a.ResidentId == id))
                     {
                         return GetNegativeResult("An apartment is linked to this resident.\nPlease unlink the selected resident with the apartment, then try deleting again", HttpStatusCode.PreconditionFailed);
                     }
-                    var residentRepository = unitOfWork.GetRepository<Resident, int>((resident) => resident.Id);
+                    var residentRepository = unitOfWork.GetResidentRepository();
                     var residentItem = residentRepository.Find(id);
                     residentItem.IsDeleted = true;
                     residentRepository.InsertOrUpdate(residentItem);

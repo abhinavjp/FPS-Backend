@@ -58,6 +58,14 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="RepositoryFoundation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Foundation.1.1.0\lib\net45\RepositoryFoundation.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap, Version=4.4.2.472, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StructureMap.4.4.2\lib\net45\StructureMap.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -154,10 +162,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FPS.Helper\FPS.Helper.csproj">
-      <Project>{9037C7DC-7978-420E-A885-6667DF9AED22}</Project>
-      <Name>FPS.Helper</Name>
-    </ProjectReference>
     <ProjectReference Include="..\FPS.Service\FPS.Service.csproj">
       <Project>{b3243ef6-e34a-4e0b-982d-87e84b1e7b26}</Project>
       <Name>FPS.Service</Name>
